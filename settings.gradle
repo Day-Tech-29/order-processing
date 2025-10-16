@@ -1,0 +1,9 @@
+/*
+ * Proyecto: Procesamiento de Pedidos Telco - HACOM
+ * Autora: Daysy Malvaceda Rojas
+ * Descripción: Configuración de módulos del proyecto Gradle.
+ */
+
+rootProject.name = 'order-processing'
+
+

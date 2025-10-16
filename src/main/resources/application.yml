@@ -1,0 +1,18 @@
+# Proyecto: Procesamiento de Pedidos Telco - HACOM
+# Autora: Daysy Malvaceda Rojas
+# Descripción: Configuración de MongoDB y WebFlux
+
+mongodbDatabase: exampleDb
+mongodbUri: "mongodb://127.0.0.1:27017"
+apiPort: 9898
+
+# Configuración adicional para Spring Actuator y logs 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true

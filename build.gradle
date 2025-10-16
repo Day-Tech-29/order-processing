@@ -1,0 +1,80 @@
+/*
+ * Proyecto: Procesamiento de Pedidos Telco - HACOM
+ * Autora: Daysy Malvaceda Rojas
+ * Descripción: Proyecto Spring Boot con WebFlux, MongoDB Reactive,
+ * gRPC, Akka Classic Actors y SMPP. Incluye logging con Log4j2 y métricas
+ * con Spring Actuator y Prometheus.
+ */
+
+// Plugins necesarios para el proyecto
+plugins {
+    id 'java' // Plugin de Java
+    id 'org.springframework.boot' version '3.2.2' // Plugin de Spring Boot
+    id 'io.spring.dependency-management' version '1.1.3' // Para manejo automático de dependencias
+    id 'com.google.protobuf' version '0.9.4' // Para generar clases a partir de archivos .proto
+}
+
+// Grupo y versión del proyecto
+group = 'com.hacom'
+version = '1.0.0'
+sourceCompatibility = '17' // Se utiliza Java 17
+
+// Repositorios donde Gradle buscará las dependencias
+repositories {
+    mavenCentral()
+}
+
+// Dependencias del proyecto
+dependencies {
+    // Spring Boot y WebFlux para API reactiva
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator' // Para métricas y health checks
+
+    // Spring Data MongoDB Reactive
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+    // Log4j2 para logging
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+    // Akka Classic Actors
+    implementation 'com.typesafe.akka:akka-actor_2.13:2.6.21'
+
+    // gRPC para comunicación remota
+    implementation 'io.grpc:grpc-netty-shaded:1.59.0'
+    implementation 'io.grpc:grpc-protobuf:1.59.0'
+    implementation 'io.grpc:grpc-stub:1.59.0'
+
+    // SMPP Cloudhopper para enviar SMS
+    implementation 'com.cloudhopper:ch-smpp:5.0.6'
+
+    // Reactor Core (reactive programming)
+    implementation 'io.projectreactor:reactor-core'
+
+    // Prometheus metrics para Spring Actuator
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Dependencias para testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+// Configuración para generar código a partir de archivos .proto de gRPC
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.24.3" // Versión del compilador protobuf
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.59.0' // Plugin de gRPC
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {} // Indica que se genere el código gRPC
+        }
+    }
+}
+
+// Configuración general de compilación Java
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8' // Para evitar problemas de codificación
+}
