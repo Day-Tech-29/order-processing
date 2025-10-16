@@ -1,0 +1,17 @@
+apiPort: 8080
+
+server:
+  port: ${apiPort}
+  error:
+    include-message: always
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/orderdb
+
+logging:
+  config: classpath:log4j2.yml
+  level:
+    root: info
+    com.hacom.orders: debug

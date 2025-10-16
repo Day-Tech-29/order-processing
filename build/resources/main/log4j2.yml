@@ -1,0 +1,59 @@
+# =====================================================
+# LOG4J2 CONFIGURATION
+# Proyecto: Order Processing System
+# Autora: DAYSY MALVACEDA ROJAS
+# Propósito: Logs profesionales y visuales con emojis
+# Fecha: 16/10/2025
+# Compatibilidad: Java 17, Spring Boot 3, WebFlux, MongoDB Reactive, Akka
+# =====================================================
+
+Configuration:
+  status: INFO
+  name: Log4j2ReactiveConfig
+
+  Appenders:
+    # ==============================================
+    # Consola - Logs en tiempo real con colores y emojis
+    # ==============================================
+    Console:
+      name: ConsoleAppender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "%highlight{[%d{HH:mm:ss}] [%t] %level %logger{36} - %msg %n}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=cyan}"
+    
+    # ==============================================
+    # Archivo rodante diario - histórico con compresión
+    # ==============================================
+    RollingFile:
+      name: FileAppender
+      fileName: logs/order-processing.log
+      filePattern: logs/order-processing-%d{yyyy-MM-dd}.log.gz
+      PatternLayout:
+        pattern: "[%d{yyyy-MM-dd HH:mm:ss}] %level %logger{36} - %msg%n"
+      Policies:
+        TimeBasedTriggeringPolicy:
+          interval: 1
+          modulate: true
+      DefaultRolloverStrategy:
+        max: 30
+
+  Loggers:
+    # Logger específico para el paquete principal
+    Logger:
+      - name: com.hacom.orders
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: ConsoleAppender
+          - ref: FileAppender
+
+    # Logger raíz - nivel INFO
+    Root:
+      level: info
+      AppenderRef:
+        - ref: ConsoleAppender
+        - ref: FileAppender
+
+  # Propiedades opcionales
+  Properties:
+    LOG_PATTERN: "[%d{yyyy-MM-dd HH:mm:ss}] %level %logger{36} - %msg%n"

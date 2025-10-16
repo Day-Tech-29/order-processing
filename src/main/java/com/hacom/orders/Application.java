@@ -1,23 +1,26 @@
-/*
- * Proyecto: Procesamiento de Pedidos Telco - HACOM
+package com.hacom.orders;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
  * Autora: Daysy Malvaceda Rojas
- * Descripción: Clase principal de la aplicación Spring Boot
- *              que inicia el servidor WebFlux y carga los beans.
+ * Descripción: Punto de entrada principal de la aplicación reactiva de procesamiento de pedidos.
+ * Usa WebFlux y Log4j2 para gestión eficiente de logs.
  */
+@SpringBootApplication
+public class Application {
 
- package com.hacom.orders;
+    private static final Logger logger = LogManager.getLogger(Application.class);
 
- import org.springframework.boot.SpringApplication;
- import org.springframework.boot.autoconfigure.SpringBootApplication;
- 
- @SpringBootApplication
- public class Application {
- 
-     public static void main(String[] args) {
-         // Inicia la aplicación Spring Boot
-         SpringApplication.run(Application.class, args);
-         System.out.println("🚀 🚀Aplicación 'Procesamiento de Pedidos HACOM' iniciada por Daysy Malvaceda Rojas en WebFlux");
-     }
- }
- 
+    public static void main(String[] args) {
+        logger.info("🚀 Iniciando aplicación Order Processing System (versión reactiva)...");
+        SpringApplication.run(Application.class, args);
+        logger.info("✅ Aplicación iniciada correctamente.");
+    }
+}
+
+
  
