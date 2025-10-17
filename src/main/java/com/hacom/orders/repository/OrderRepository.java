@@ -1,25 +1,26 @@
-/*
+package com.hacom.orders.repository;
+
+import com.hacom.orders.model.Order;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
+
+import java.time.OffsetDateTime;
+
+/**
  * Proyecto: Procesamiento de Pedidos Telco - HACOM
  * Autora: Daysy Malvaceda Rojas
- * Descripción: Repositorio Reactivo de MongoDB para la entidad Order.
- *              Permite operaciones CRUD y consultas reactivas.
+ * Descripción: Repositorio ReactiveMongo para la entidad Order.
+ *              Permite consultas básicas y por rango de fechas.
  */
+public interface OrderRepository extends ReactiveMongoRepository<Order, String> {
 
- package com.hacom.orders.repository;
-
- import com.hacom.orders.model.Order;
- import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
- import org.springframework.stereotype.Repository;
- import reactor.core.publisher.Flux;
- 
- import java.time.OffsetDateTime;
- 
- @Repository
- public interface OrderRepository extends ReactiveMongoRepository<Order, String> {
- 
-     // Para Consultar todos los pedidos de un rango de fechas usando OffsetDateTime
-     Flux<Order> findByTsBetween(OffsetDateTime start, OffsetDateTime end);
- 
-     
- }
- 
+    /**
+     * Consulta todos los pedidos cuyo timestamp está entre start y end.
+     *
+     * @param start fecha inicial
+     * @param end   fecha final
+     * @return Flux<Order> con todos los pedidos en el rango
+     */
+    Flux<Order> findByTsBetween(OffsetDateTime start, OffsetDateTime end);
+}

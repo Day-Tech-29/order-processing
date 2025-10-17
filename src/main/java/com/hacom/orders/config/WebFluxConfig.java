@@ -20,13 +20,16 @@
      @Value("${apiPort}")
      private int apiPort;
  
-     @Bean
-     public ReactiveWebServerFactory reactiveWebServerFactory() {
+    // @Bean
+     
+    //public ReactiveWebServerFactory reactiveWebServerFactory() {
          // Se crea un servidor WebFlux con el puerto programático 
-         NettyReactiveWebServerFactory factory = new NettyReactiveWebServerFactory();
-         factory.setPort(apiPort);
-         System.out.println("🌐 🌐Servidor WebFlux iniciado en puerto: " + apiPort);
-         return factory;
-     }
+        // NettyReactiveWebServerFactory factory = new NettyReactiveWebServerFactory();
+        // factory.setPort(apiPort);
+        // System.out.println("🌐 🌐Servidor WebFlux iniciado en puerto: " + apiPort);
+         
+        //return factory;
+    
+    //}
  }
  

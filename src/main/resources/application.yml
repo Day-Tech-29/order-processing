@@ -6,12 +6,28 @@ server:
     include-message: always
 
 spring:
+  main:
+    web-application-type: reactive
   data:
     mongodb:
       uri: mongodb://localhost:27017/orderdb
 
-logging:
-  config: classpath:log4j2.yml
-  level:
-    root: info
-    com.hacom.orders: debug
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: false
+
+akka:
+  actor:
+    provider: "local"
