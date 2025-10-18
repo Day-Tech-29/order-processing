@@ -1,24 +1,19 @@
 package com.hacom.orders;
 
+import akka.actor.ActorSystem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Bean;
 
-/**
- * Proyecto: Order Processing System - HACOM
- * Autora: Daysy Malvaceda Rojas
- * Descripción: Punto de entrada principal de la aplicación Reactiva.
- * Usa WebFlux y Log4j2 para gestión eficiente de logs.
- */
 @SpringBootApplication
 public class Application {
 
-    private static final Logger logger = LogManager.getLogger(Application.class);
-
     public static void main(String[] args) {
-        logger.info("🚀 Iniciando aplicación Order Processing System...");
         SpringApplication.run(Application.class, args);
-        logger.info("✅ Aplicación iniciada correctamente.");
+    }
+
+    @Bean
+    public ActorSystem actorSystem() {
+        return ActorSystem.create("ordersSystem");
     }
 }

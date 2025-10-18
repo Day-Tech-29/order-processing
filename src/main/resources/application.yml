@@ -1,7 +1,9 @@
-apiPort: 8080
+mongodbDatabase: exampleDb 
+mongodbUri: "mongodb://127.0.0.1:27017" 
+apiPort: 9898 
 
 server:
-  port: ${apiPort}
+  port: ${apiPort:9898}
   error:
     include-message: always
 
@@ -16,11 +18,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, prometheus
+        include: "*"
   metrics:
-    export:
-      prometheus:
-        enabled: true
+    enable:
+      all: true
 
 grpc:
   server:
@@ -31,3 +32,5 @@ grpc:
 akka:
   actor:
     provider: "local"
+
+

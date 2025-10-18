@@ -1,75 +1,154 @@
-// build.gradle - Configuración completa para Order Processing System
-// Autora: Daysy Malvaceda Rojas
+/*
+ * Proyecto: Procesamiento de Pedidos Telco - HACOM
+ * Autora: Daysy Malvaceda Rojas
+ * Descripción: Configuración de Gradle (Groovy DSL) para construir
+ * un servicio WebFlux con MongoDB reactivo, gRPC, Cloudhopper SMPP
+ * y actores Akka. Este archivo incluye soporte para generación
+ * automática de código gRPC mediante Protobuf.
+ */
 
 plugins {
     id 'java'
-    id 'application'
     id 'idea'
-    id 'com.google.protobuf' version '0.9.4'  // Para generar clases gRPC desde proto
-    id 'org.springframework.boot' version '3.2.3'
-    id 'io.spring.dependency-management' version '1.1.3'
+    id 'com.google.protobuf' version '0.9.4'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
+
 
 group = 'com.hacom.orders'
 version = '1.0.0'
 sourceCompatibility = '17'
 
-repositories {
-    mavenCentral()
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
+repositories {
+    // --- Repositorios principales ---
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    
+}
+
+
+configurations.all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    exclude group: 'ch.qos.logback', module: 'logback-classic'
+    exclude group: 'ch.qos.logback', module: 'logback-core'
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    exclude group: 'org.slf4j', module: 'slf4j-simple'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+}
+
+
 dependencies {
-    // Spring Boot WebFlux y MongoDB Reactive
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // --- SPRING FRAMEWORK ---
+    implementation('org.springframework.boot:spring-boot-starter-webflux') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-
-    // Spring Boot Actuator + Prometheus
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'io.micrometer:micrometer-core:1.11.2'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
-    // Akka Classic Actors
+    // --- gRPC + Spring Boot ---
+    implementation('io.github.lognet:grpc-spring-boot-starter:5.1.5') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    // --- MongoDB ---
+    implementation 'org.mongodb:mongodb-driver-reactivestreams:4.11.0'
+
+    // --- AKKA ---
     implementation 'com.typesafe.akka:akka-actor_2.13:2.6.21'
+    implementation 'com.typesafe.akka:akka-actor-typed_2.13:2.6.21'
 
-    // gRPC para comunicación entre servicios
-    implementation 'io.grpc:grpc-netty-shaded:1.59.0'
-    implementation 'io.grpc:grpc-protobuf:1.59.0'
-    implementation 'io.grpc:grpc-stub:1.59.0'
-
-    // SMPP Cloudhopper (archivo jar local)
+    // --- SMPP ---
     implementation files('libs/ch-smpp-5.0.9.jar')
 
-    // Testing
+
+
+    // --- Anotaciones ---
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'org.jetbrains:annotations:24.0.1'
+
+    // --- Lombok ---
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // --- Testing ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-// Configuración de Protobuf para gRPC
+
+
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.23.3"
+        artifact = 'com.google.protobuf:protoc:3.25.1'
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.59.0'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.63.0'
         }
     }
     generateProtoTasks {
-        all()*.plugins {
-            grpc {}
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+            // 🔹 Asegura que los fuentes generados se agreguen automáticamente
+            task.builtins {
+                java {}
+            }
         }
     }
 }
 
-// Configuración de la aplicación
-application {
-    mainClass = 'com.hacom.orders.Application' // Clase principal de Spring Boot
+sourceSets {
+    main {
+        java {
+            srcDirs += [
+                'build/generated/source/proto/main/java',
+                'build/generated/source/proto/main/grpc'
+            ]
+        }
+    }
 }
-
-// Asegurando codificación UTF-8
-tasks.withType(JavaCompile) {
+// 🔹 Compilación depende de la generación proto
+compileJava {
+    dependsOn tasks.generateProto
     options.encoding = 'UTF-8'
 }
 
-//  Nota(Daysy Malvaceda Rojas):
-// 1. No se usan log4j2.yml para evitar conflicto con Spring Boot.
-// 2. Se recomienda usar logback-spring.xml en src/main/resources.
-// 3. Esta configuración cumple con la rúbrica 100%: Gradle, YAML, MongoDB, WebFlux, gRPC, Akka, SMPP, Prometheus.
+
+sourceSets {
+    main {
+        java {
+            srcDirs += [
+                'build/generated/source/proto/main/java',
+                'build/generated/source/proto/main/grpc'
+            ]
+        }
+        proto {
+            srcDir 'src/main/proto'
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+// ✅ Evitar error de duplicado de order.proto
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+/*
+ * 📘 Notas técnicas:
+ * - Cloudhopper SMPP se usa para envío de SMS en el flujo post-procesamiento de pedidos.
+ * - gRPC se usa para la comunicación entre microservicios.
+ * - Akka gestiona los actores para procesamiento concurrente eficiente.
+ * - Autora responsable: Daysy Malvaceda Rojas
+ */
